@@ -28,15 +28,30 @@ const sorting = async () => {
     for (let i = 0; i < endpoints.length; i++) {
         try {
             const res = await fetch(endpoints[i]);
-            const data = await res.json();
-            console.log(data)
-            let isDone = findProperty(data);
-            console.log(isDone)
+            const data = await res.json();            
+            const isDone = findProperty(data);
+
+            if (isDone) {
+                console.log(`[Success] ${endpoints[i]}: isDone - True`);
+                trueCounter++;
+            } else if (!isDone && isDone !== undefined) {
+                console.log(`[Success] ${endpoints[i]}: isDone - False`);
+                falseCounter++;                
+            }
+
         } catch (e) {
-            console.error(e)
-        }
-        
+            if (errorCounter < 3) {
+                errorCounter++;
+                i--;
+            } else {
+                errorCounter = 0;
+                console.log(`[Fail] ${endpoints[i]}: The endpoint is unavailable`);
+            }            
+        }        
     }    
+
+    console.log(`Found True values: ${trueCounter},`);
+    console.log(`Found False values: ${falseCounter}`);
 }
 
 sorting();
